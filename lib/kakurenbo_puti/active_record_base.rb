@@ -1,3 +1,4 @@
+require 'tapp'
 module KakurenboPuti
   # Extension module of ActiveRecord::Base
   module ActiveRecordBase
@@ -30,7 +31,7 @@ module KakurenboPuti
       def self.create_column_name_accessors(target_class, column)
         target_class.class_eval do
           define_singleton_method(:soft_delete_column) { column }
-          delegate :soft_delete_column, to: :class
+          delegate :soft_delete_column, to: target_class.name.to_sym
         end
       end
 
@@ -39,14 +40,15 @@ module KakurenboPuti
       # @param [Array<Symbol>] dependent_associations Names of dependency association.
       def self.create_scopes(target_class, dependent_associations)
         target_class.class_eval do
-          scope :only_soft_destroyed, -> { where.not(id: without_soft_destroyed.select(:id)) }
+          # TODO: Rails3はwhere.notが使えない。同じことをRails3でやろうとするとどう書くの!?
+          scope :only_soft_destroyed, -> { where.not(id: without_soft_destroyed.select(:id).tapp) }
           scope :without_soft_destroyed, (lambda do
             dependent_associations.inject(where(soft_delete_column => nil)) do |relation, name|
               association = relation.klass.reflect_on_all_associations.find{|a| a.name == name }
               if association.klass.method_defined?(:soft_delete_column)
-                relation.joins(name).merge(association.klass.without_soft_destroyed).references(name)
+                relation.joins(name).merge(association.klass.without_soft_destroyed)
               else
-                relation.joins(name).references(name)
+                relation.joins(name)
               end
             end
           end)

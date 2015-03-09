@@ -120,7 +120,7 @@ describe KakurenboPuti::ActiveRecordBase do
     context 'When parent is hard-deleted' do
       it 'Return a relation without parent soft-deleted model.' do
         expect {
-          child_instance.normal_model.destroy!
+          child_instance.normal_model.destroy
         }.to change {
           subject.count
         }.by(1)
@@ -133,7 +133,7 @@ describe KakurenboPuti::ActiveRecordBase do
 
         it 'Return a relation with parent soft-deleted model.' do
           expect {
-            child_instance.normal_model.destroy!
+            child_instance.normal_model.destroy
           }.not_to change {
             subject.count
           }
@@ -173,7 +173,7 @@ describe KakurenboPuti::ActiveRecordBase do
 
         it 'Return a relation with parent soft-deleted model.' do
           expect {
-            child_instance.soft_delete_model.soft_destroy!
+            child_instance.soft_delete_model.soft_destroy
           }.not_to change {
             subject.count
           }
@@ -184,7 +184,7 @@ describe KakurenboPuti::ActiveRecordBase do
     context 'When parent is hard-deleted' do
       it 'Return a relation without parent soft-deleted model.' do
         expect {
-          child_instance.normal_model.destroy!
+          child_instance.normal_model.destroy
         }.to change {
           subject.count
         }.by(-1)
@@ -197,7 +197,7 @@ describe KakurenboPuti::ActiveRecordBase do
 
         it 'Return a relation with parent soft-deleted model.' do
           expect {
-            child_instance.normal_model.destroy!
+            child_instance.normal_model.destroy
           }.not_to change {
             subject.count
           }
