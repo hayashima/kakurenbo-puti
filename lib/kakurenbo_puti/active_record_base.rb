@@ -40,8 +40,7 @@ module KakurenboPuti
       # @param [Array<Symbol>] dependent_associations Names of dependency association.
       def self.create_scopes(target_class, dependent_associations)
         target_class.class_eval do
-          # TODO: Rails3はwhere.notが使えない。同じことをRails3でやろうとするとどう書くの!?
-          scope :only_soft_destroyed, -> { where.not(id: without_soft_destroyed.select(:id).tapp) }
+          scope :only_soft_destroyed, -> { where(self.arel_table[:id].not_in(without_soft_destroyed.select(self.arel_table[:id]).arel)) }
           scope :without_soft_destroyed, (lambda do
             dependent_associations.inject(where(soft_delete_column => nil)) do |relation, name|
               association = relation.klass.reflect_on_all_associations.find{|a| a.name == name }
