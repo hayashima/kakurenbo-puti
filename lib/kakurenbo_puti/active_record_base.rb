@@ -87,7 +87,7 @@ module KakurenboPuti
       # Check if model is soft-deleted.
       # @return [Boolean] Return true if model is soft-deleted.
       def soft_destroyed?
-        self.class.only_soft_destroyed.where(id: id).exists?
+        self.class.unscoped.only_soft_destroyed.where(id: id).exists?
       end
     end
   end
