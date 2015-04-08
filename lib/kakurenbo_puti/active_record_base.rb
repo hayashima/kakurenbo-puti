@@ -13,6 +13,7 @@ module KakurenboPuti
       Initializers.create_scopes self, dependent_associations
 
       include InstanceMethods
+      extend ClassMethods
     end
 
     module Initializers
@@ -88,6 +89,16 @@ module KakurenboPuti
       # @return [Boolean] Return true if model is soft-deleted.
       def soft_destroyed?
         self.class.unscoped.only_soft_destroyed.where(id: id).exists?
+      end
+    end
+
+    module ClassMethods
+      def soft_destroy_all(conditions = nil)
+        if conditions
+          where(conditions).soft_destroy_all
+        else
+          all.each {|object| object.soft_destroy }
+        end
       end
     end
   end
